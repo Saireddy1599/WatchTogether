@@ -13,6 +13,13 @@ const AppState = {
         theme: 'dark',
         soundNotifications: true,
         chatNotifications: true
+    },
+    streamingServices: {
+        netflix: { name: 'Netflix', icon: 'https://cdn-icons-png.flaticon.com/512/5977/5977590.png' },
+        prime: { name: 'Prime Video', icon: 'https://cdn-icons-png.flaticon.com/512/5977/5977577.png' },
+        hotstar: { name: 'Hotstar', icon: 'https://cdn-icons-png.flaticon.com/512/5977/5977583.png' },
+        netmirror: { name: 'NetMirror', icon: 'https://cdn-icons-png.flaticon.com/512/5977/5977585.png' },
+        youtube: { name: 'YouTube', icon: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png' }
     }
 };
 
