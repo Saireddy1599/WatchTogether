@@ -1,0 +1,77 @@
+.quick-actions {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.quick-actions h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.streaming-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.service-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.service-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.service-btn img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+}
+
+.service-btn span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Service-specific styles */
+.service-btn.netflix {
+    background: linear-gradient(135deg, #E50914 0%, #B20710 100%);
+}
+
+.service-btn.prime {
+    background: linear-gradient(135deg, #00A8E1 0%, #0077BE 100%);
+}
+
+.service-btn.hotstar {
+    background: linear-gradient(135deg, #1F80E0 0%, #0D47A1 100%);
+}
+
+.service-btn.netmirror {
+    background: linear-gradient(135deg, #6B4CE6 0%, #4527A0 100%);
+}
+
+.service-btn.youtube {
+    background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%);
+}
+
+.service-btn.netflix span,
+.service-btn.prime span,
+.service-btn.hotstar span,
+.service-btn.netmirror span,
+.service-btn.youtube span {
+    color: #fff;
+}
