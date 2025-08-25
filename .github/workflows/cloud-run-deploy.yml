@@ -23,14 +23,23 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install -g vite
+          npm run build
 
       - name: Build application
         run: npm run build
+
+      - name: Setup Cloud SDK
+        uses: 'google-github-actions/setup-gcloud@v1'
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          install_components: 'gke-gcloud-auth-plugin'
 
       - name: Google Auth
         id: auth
@@ -38,12 +47,9 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      - name: Set up Cloud SDK
-        uses: 'google-github-actions/setup-gcloud@v1'
-
       - name: Configure Docker
         run: |
-          gcloud auth configure-docker gcr.io
+          gcloud auth configure-docker
 
       - name: Build and Push Container
         run: |
