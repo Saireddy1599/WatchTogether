@@ -235,8 +235,7 @@ function initializeAuth() {
         if (email && password) {
             showLoading('Logging in...');
             try {
-                const { signInWithEmailAndPassword } = await import('firebase/auth');
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 loginUser(user.email);
                 showToast('Success', 'Login successful!', 'success');
@@ -275,12 +274,11 @@ function initializeAuth() {
         if (username && email && password) {
             showLoading('Creating account...');
             try {
-                const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
                 // Update the user's display name
-                await updateProfile(user, {
+                await user.updateProfile({
                     displayName: username
                 });
                 
@@ -322,12 +320,11 @@ function initializeAuth() {
         if (username) {
             showLoading('Joining as guest...');
             try {
-                const { signInAnonymously, updateProfile } = await import('firebase/auth');
-                const userCredential = await signInAnonymously(auth);
+                const userCredential = await firebase.auth().signInAnonymously();
                 const user = userCredential.user;
                 
                 // Update the anonymous user's display name
-                await updateProfile(user, {
+                await user.updateProfile({
                     displayName: username
                 });
                 
