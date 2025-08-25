@@ -221,18 +221,26 @@ function initializeAuth() {
     const loginUsernameInput = document.getElementById('login-username');
     const loginPasswordInput = document.getElementById('login-password');
 
-    function handleLogin() {
-        const username = loginUsernameInput.value.trim();
+    async function handleLogin() {
+        const email = loginUsernameInput.value.trim();
         const password = loginPasswordInput.value.trim();
         
-        if (username && password) {
+        if (email && password) {
             showLoading('Logging in...');
-            setTimeout(() => {
-                loginUser(username);
+            try {
+                const { signInWithEmailAndPassword } = await import('firebase/auth');
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                loginUser(user.email);
+                showToast('Success', 'Login successful!', 'success');
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('Error', error.message, 'error');
+            } finally {
                 hideLoading();
-            }, 1000);
+            }
         } else {
-            showToast('Error', 'Please enter username and password', 'error');
+            showToast('Error', 'Please enter email and password', 'error');
         }
     }
 
@@ -252,17 +260,37 @@ function initializeAuth() {
     const signupEmailInput = document.getElementById('signup-email');
     const signupPasswordInput = document.getElementById('signup-password');
 
-    function handleSignup() {
+    async function handleSignup() {
         const username = signupUsernameInput.value.trim();
         const email = signupEmailInput.value.trim();
         const password = signupPasswordInput.value.trim();
         
         if (username && email && password) {
             showLoading('Creating account...');
-            setTimeout(() => {
-                createUser(username, email);
+            try {
+                const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                // Update the user's display name
+                await updateProfile(user, {
+                    displayName: username
+                });
+                
+                await setDoc(doc(db, "users", user.uid), {
+                    username: username,
+                    email: email,
+                    createdAt: new Date().toISOString()
+                });
+
+                showToast('Success', 'Account created successfully!', 'success');
+                loginUser(email);
+            } catch (error) {
+                console.error('Signup error:', error);
+                showToast('Error', error.message, 'error');
+            } finally {
                 hideLoading();
-            }, 1500);
+            }
         } else {
             showToast('Error', 'Please fill in all fields', 'error');
         }
@@ -281,15 +309,29 @@ function initializeAuth() {
     const guestBtn = document.getElementById('guest-btn');
     const guestUsernameInput = document.getElementById('guest-username');
 
-    function handleGuest() {
+    async function handleGuest() {
         const username = guestUsernameInput.value.trim();
         
         if (username) {
             showLoading('Joining as guest...');
-            setTimeout(() => {
-                loginAsGuest(username);
+            try {
+                const { signInAnonymously, updateProfile } = await import('firebase/auth');
+                const userCredential = await signInAnonymously(auth);
+                const user = userCredential.user;
+                
+                // Update the anonymous user's display name
+                await updateProfile(user, {
+                    displayName: username
+                });
+                
+                showToast('Success', 'Joined as guest!', 'success');
+                loginUser(username);
+            } catch (error) {
+                console.error('Guest login error:', error);
+                showToast('Error', error.message, 'error');
+            } finally {
                 hideLoading();
-            }, 800);
+            }
         } else {
             showToast('Error', 'Please enter a display name', 'error');
         }
