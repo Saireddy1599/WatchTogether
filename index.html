@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WatchTogether - Premium Watch Party Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+</head>
+<body>
+    <!-- Authentication Screen -->
+    <div id="auth-screen" class="screen">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1 class="app-logo">🎬 WatchTogether</h1>
+                <p class="app-tagline">Premium synchronized movie watching experience</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="login">Login</button>
+                <button class="tab-btn" data-tab="signup">Sign Up</button>
+                <button class="tab-btn" data-tab="guest">Guest</button>
+            </div>
+
+            <!-- Login Tab -->
+            <div class="auth-form active" id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Username or Email</label>
+                    <input type="text" class="form-control" id="login-username" placeholder="Enter your username or email" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="login-password" placeholder="Enter your password" autocomplete="current-password">
+                </div>
+                <button type="button" class="btn btn--primary btn--full-width" id="login-btn">Login</button>
+                <button type="button" class="btn btn--secondary btn--full-width" id="google-signin-btn">Sign in with Google</button>
+                <p class="auth-demo-info">Demo: Use any username/password to login</p>
+            </div>
+
+            <!-- Sign Up Tab -->
+            <div class="auth-form" id="signup-form">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-control" id="signup-username" placeholder="Choose a username" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="signup-email" placeholder="Enter your email" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" id="signup-password" placeholder="Create a password" autocomplete="new-password">
+                </div>
+                <button type="button" class="btn btn--primary btn--full-width" id="signup-btn">Create Account</button>
+            </div>
+
+            <!-- Guest Tab -->
+            <div class="auth-form" id="guest-form">
+                <div class="form-group">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" class="form-control" id="guest-username" placeholder="Enter your display name" autocomplete="nickname">
+                </div>
+                <button type="button" class="btn btn--secondary btn--full-width" id="guest-btn">Join as Guest</button>
+                <p class="auth-demo-info">No account required - join instantly!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="screen hidden">
+        <nav class="dashboard-nav">
+            <div class="nav-brand">
+                <span class="app-logo">🎬 WatchTogether</span>
+            </div>
+            <div class="nav-user">
+                <div class="user-info">
+                    <img class="user-avatar" id="user-avatar" src="" alt="User Avatar">
+                    <span class="user-name" id="user-name"></span>
+                    <span class="user-status online" id="user-status"></span>
+                </div>
+                <button class="btn btn--outline btn--sm" id="logout-btn">Logout</button>
+            </div>
+        </nav>
+
+        <div class="dashboard-content">
+            <div class="dashboard-header">
+                <h2>Your Dashboard</h2>
+                <button class="btn btn--primary" id="create-room-btn">Create Room</button>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-section">
+                    <h3>Active Rooms</h3>
+                    <div id="active-rooms" class="rooms-grid">
+                        <!-- Active rooms will be populated here -->
+                    </div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h3>Recent Rooms</h3>
+                    <div id="recent-rooms" class="rooms-list">
+                        <!-- Recent rooms will be populated here -->
+                    </div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-actions">
+                        <button class="action-card" id="join-room-btn">
+                            <span class="action-icon">🔗</span>
+                            <span class="action-title">Join Room</span>
+                            <span class="action-desc">Enter room code or link</span>
+                        </button>
+                        <button class="action-card" id="browse-public-btn">
+                            <span class="action-icon">🌐</span>
+                            <span class="action-title">Browse Public</span>
+                            <span class="action-desc">Find public watch parties</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Creation Modal -->
+    <div id="room-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Room</h3>
+                <button class="modal-close" id="close-room-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Room Name</label>
+                    <input type="text" class="form-control" id="room-name" placeholder="Enter room name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="room-description" placeholder="Optional description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Privacy</label>
+                    <select class="form-control" id="room-privacy">
+                        <option value="private">Private (invite only)</option>
+                        <option value="public">Public (anyone can join)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password (Optional)</label>
+                    <input type="password" class="form-control" id="room-password" placeholder="Set room password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Max Participants</label>
+                    <select class="form-control" id="room-max-participants">
+                        <option value="5">5 people</option>
+                        <option value="10" selected>10 people</option>
+                        <option value="20">20 people</option>
+                        <option value="50">50 people</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--outline" id="cancel-room-btn">Cancel</button>
+                <button class="btn btn--primary" id="create-room-confirm-btn">Create Room</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Room Modal -->
+    <div id="join-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Join Room</h3>
+                <button class="modal-close" id="close-join-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Room Code or Link</label>
+                    <input type="text" class="form-control" id="join-room-code" placeholder="Enter room code or paste room link">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password (if required)</label>
+                    <input type="password" class="form-control" id="join-room-password" placeholder="Enter room password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--outline" id="cancel-join-btn">Cancel</button>
+                <button class="btn btn--primary" id="join-room-confirm-btn">Join Room</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Watch Room Screen -->
+    <div id="watch-screen" class="screen hidden">
+        <div class="watch-header">
+            <div class="room-info">
+                <h2 id="room-title">Room Name</h2>
+                <span class="room-participants">👥 <span id="participant-count">0</span> participants</span>
+            </div>
+            <div class="room-controls">
+                <button class="btn btn--outline btn--sm" id="invite-btn">📤 Invite</button>
+                <button class="btn btn--outline btn--sm" id="settings-btn">⚙️ Settings</button>
+                <button class="btn btn--outline btn--sm" id="leave-room-btn">🚪 Leave</button>
+            </div>
+        </div>
+
+        <div class="watch-content">
+            <div class="video-section">
+                <div class="video-container">
+                    <video id="main-video" controls crossorigin="anonymous">
+                        <source src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="video-overlay" id="video-overlay">
+                        <div class="video-status">
+                            <span id="sync-status">🟢 Synchronized</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="video-controls">
+                    <div class="control-group">
+                        <button class="control-btn" id="add-video-btn">➕ Add Video</button>
+                        <button class="control-btn" id="queue-btn">📝 Queue</button>
+                        <div class="video-info">
+                            <span id="video-title">No video loaded</span>
+                            <span id="video-time">0:00 / 0:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="sidebar-tabs">
+                    <button class="sidebar-tab active" data-tab="chat">💬 Chat</button>
+                    <button class="sidebar-tab" data-tab="participants">👥 People</button>
+                </div>
+
+                <div class="sidebar-content">
+                    <!-- Chat Tab -->
+                    <div class="sidebar-panel active" id="chat-panel">
+                        <div class="chat-container">
+                            <div id="chat-messages" class="chat-messages">
+                                <!-- Messages will be populated here -->
+                            </div>
+                            <div class="chat-input-container">
+                                <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." maxlength="500">
+                                <button class="chat-send-btn" id="chat-send-btn">📤</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Participants Tab -->
+                    <div class="sidebar-panel" id="participants-panel">
+                        <div id="participants-list" class="participants-list">
+                            <!-- Participants will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Video Modal -->
+    <div id="video-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Video</h3>
+                <button class="modal-close" id="close-video-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="video-source-tabs">
+                    <button class="video-tab active" data-source="samples">📁 Samples</button>
+                    <button class="video-tab" data-source="direct">🔗 Direct URL</button>
+                    <button class="video-tab" data-source="youtube">🎥 YouTube</button>
+                </div>
+
+                <div class="video-source-content">
+                    <!-- Sample Videos Tab -->
+                    <div class="video-source-panel active" id="samples-panel">
+                        <div class="sample-videos" id="sample-videos">
+                            <!-- Sample videos will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Direct URL Tab -->
+                    <div class="video-source-panel" id="direct-panel">
+                        <div class="form-group">
+                            <label class="form-label">Direct Video URL</label>
+                            <input type="text" class="form-control" id="direct-url" placeholder="https://example.com/video.mp4">
+                            <small class="form-help">Direct link to MP4, WebM, or other video files</small>
+                        </div>
+                    </div>
+
+                    <!-- YouTube Tab -->
+                    <div class="video-source-panel" id="youtube-panel">
+                        <div class="form-group">
+                            <label class="form-label">YouTube URL</label>
+                            <input type="text" class="form-control" id="youtube-url" placeholder="https://www.youtube.com/watch?v=...">
+                            <small class="form-help">Paste any YouTube video URL</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--outline" id="cancel-video-btn">Cancel</button>
+                <button class="btn btn--primary" id="add-video-confirm-btn">Add Video</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="modal-close" id="close-settings-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h4>Theme</h4>
+                    <div class="theme-options">
+                        <button class="theme-option active" data-theme="dark">
+                            <span class="theme-preview dark-preview"></span>
+                            Dark
+                        </button>
+                        <button class="theme-option" data-theme="light">
+                            <span class="theme-preview light-preview"></span>
+                            Light
+                        </button>
+                        <button class="theme-option" data-theme="cinema">
+                            <span class="theme-preview cinema-preview"></span>
+                            Cinema
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h4>Notifications</h4>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="sound-notifications" checked>
+                            Sound notifications
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="chat-notifications" checked>
+                            Chat notifications
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--primary" id="save-settings-btn">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading...</p>
+    </div>
+
+    <!-- Assistant floating button and modal -->
+    <button id="assistant-btn" title="Ask Assistant" aria-label="Ask Assistant" class="assistant-btn">🤖</button>
+
+    <div id="assistant-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Assistant</h3>
+                <button class="modal-close" id="assistant-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="assistant-prompt" class="form-control" rows="4" placeholder="Ask the assistant a question, e.g. 'Summarize the chat'..."></textarea>
+                <div id="assistant-response" style="white-space:pre-wrap;margin-top:12px;max-height:300px;overflow:auto;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--outline" id="assistant-cancel">Cancel</button>
+                <button class="btn btn--primary" id="assistant-send">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <!-- Firebase compat SDK (for simple client usage without bundler) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="firebase-client.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
