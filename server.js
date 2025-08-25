@@ -1,7 +1,7 @@
-// Testing deployment workflow
 const express = require('express');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const admin = require('firebase-admin');
 const users = require('./users');
@@ -47,7 +47,8 @@ if (!VERTEX_MODEL || !GCP_PROJECT_ID) {
 
 // Enforce request size limits to avoid overly large payloads
 app.use(express.json({ limit: '10kb' }));
-app.use(express.static(path.join(__dirname, '/')));
+// Serve static files from the Vite build output directory
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Simple rate limiter: 30 requests per minute per IP for /api/ai
 const aiLimiter = rateLimit({
@@ -360,6 +361,11 @@ process.on('SIGINT', shutdown);
 
 // Export app for testing, and start server when run directly
 if (require.main === module) {
+    // Serve index.html for all other routes (client-side routing)
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    });
+
     app.listen(port, () => {
         console.log(`Server running on http://localhost:${port}`);
     });
