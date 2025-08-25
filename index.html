@@ -4,20 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WatchTogether - Premium Watch Party Platform</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="components/quick-actions.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 </head>
 <body>
-    <!-- Authentication Screen -->
-    <div id="auth-screen" class="screen">
-        <div class="auth-container">
-            <div class="auth-header">
-                <h1 class="app-logo">🎬 WatchTogether</h1>
-                <p class="app-tagline">Premium synchronized movie watching experience</p>
-            </div>
-            
-            <div class="auth-tabs">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
                 <button class="tab-btn active" data-tab="login">Login</button>
                 <button class="tab-btn" data-tab="signup">Sign Up</button>
                 <button class="tab-btn" data-tab="guest">Guest</button>
@@ -93,39 +84,23 @@
                 <h3>Quick Actions</h3>
                 <div class="streaming-services-grid">
                     <button class="service-btn netflix" data-service="netflix">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5977/5977590.png" alt="Netflix">
+                        <img src="https://assets.nflxext.com/us/ffe/siteui/common/icons/nficon2016.ico" alt="Netflix">
                         <span>Netflix</span>
                     </button>
                     <button class="service-btn prime" data-service="prime">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5977/5977577.png" alt="Prime Video">
+                        <img src="https://m.media-amazon.com/images/G/01/digital/video/web/favicon.ico" alt="Prime Video">
                         <span>Prime Video</span>
                     </button>
                     <button class="service-btn hotstar" data-service="hotstar">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5977/5977583.png" alt="Hotstar">
+                        <img src="https://www.hotstar.com/assets/favicon.ico" alt="Hotstar">
                         <span>Hotstar</span>
                     </button>
                     <button class="service-btn netmirror" data-service="netmirror">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5977/5977585.png" alt="NetMirror">
+                        <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='60'>🎥</text></svg>" alt="NetMirror">
                         <span>NetMirror</span>
                     </button>
                     <button class="service-btn youtube" data-service="youtube">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube">
-                        <span>YouTube</span>
-                    </button>
-                </div>
-            </div>
-                        <span>Prime Video</span>
-                    </button>
-                    <button class="service-btn hotstar" data-service="hotstar">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5977/5977583.png" alt="Hotstar">
-                        <span>Hotstar</span>
-                    </button>
-                    <button class="service-btn netmirror" data-service="netmirror">
-                        <img src="https://cdn-icons-png.flaticon.com/512/5977/5977585.png" alt="NetMirror">
-                        <span>NetMirror</span>
-                    </button>
-                    <button class="service-btn youtube" data-service="youtube">
-                        <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube">
+                        <img src="https://www.youtube.com/favicon.ico" alt="YouTube">
                         <span>YouTube</span>
                     </button>
                 </div>
