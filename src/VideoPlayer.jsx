@@ -1,7 +1,7 @@
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 
-export function syncPlayback(roomId, videoElement) {
+function syncPlayback(roomId, videoElement) {
   // Listen for updates
   onSnapshot(doc(db, "rooms", roomId), (docSnap) => {
     const data = docSnap.data();
@@ -17,3 +17,9 @@ export function syncPlayback(roomId, videoElement) {
     }, { merge: true });
   };
 }
+
+const VideoPlayer = {
+  syncPlayback
+};
+
+export default VideoPlayer;

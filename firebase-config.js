@@ -2,6 +2,7 @@
 window.FIREBASE_CONFIG = {
   apiKey: "AIzaSyBvTQaROh0coXcv51bqT0qdfn0echG_m_A",
   authDomain: "watchtogether-48c1e.firebaseapp.com",
+  databaseURL: "https://watchtogether-48c1e-default-rtdb.firebaseio.com",
   projectId: "watchtogether-48c1e",
   storageBucket: "watchtogether-48c1e.appspot.com",
   messagingSenderId: "707592941078",

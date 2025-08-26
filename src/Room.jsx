@@ -1,7 +1,7 @@
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 
-export async function createRoom(roomId, user, videoUrl) {
+async function createRoom(roomId, user, videoUrl) {
   await setDoc(doc(db, "rooms", roomId), {
     host: user.uid,
     videoUrl: videoUrl || "",
@@ -18,10 +18,18 @@ function getServiceFromUrl(url) {
   return 'Unknown';
 }
 
-export async function joinRoom(roomId, user) {
+async function joinRoom(roomId, user) {
   const roomRef = doc(db, "rooms", roomId);
   const roomSnap = await getDoc(roomRef);
   if (roomSnap.exists()) {
     console.log("Room data:", roomSnap.data());
   }
 }
+
+const Room = {
+  createRoom,
+  joinRoom,
+  getServiceFromUrl
+};
+
+export default Room;

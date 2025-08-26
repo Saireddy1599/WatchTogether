@@ -8,10 +8,6 @@
     ],
     "rewrites": [
       {
-        "source": "/api/**",
-        "run": { "serviceId": "watchtogether-backend", "region": "us-central1" }
-      },
-      {
         "source": "**",
         "destination": "/index.html"
       }
