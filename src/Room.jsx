@@ -1,5 +1,5 @@
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import { db } from "../firebase";
 
 export async function createRoom(roomId, user, videoUrl) {
   await setDoc(doc(db, "rooms", roomId), {
