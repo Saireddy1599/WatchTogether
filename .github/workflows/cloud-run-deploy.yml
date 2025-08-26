@@ -9,9 +9,8 @@ permissions:
   id-token: write
 
 env:
-  PROJECT_ID: watchtogether
-  REGION: us-central1
-  SERVICE_NAME: watchtogether-pro
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: ${{ secrets.GCP_REGION }}
 
 jobs:
   deploy:
@@ -36,15 +35,17 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
-
       - name: Setup Cloud SDK
         uses: 'google-github-actions/setup-gcloud@v1'
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
+          install_components: 'gke-gcloud-auth-plugin'
+
+      - name: Google Auth
+        id: auth
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
       - name: Configure Docker
         run: |

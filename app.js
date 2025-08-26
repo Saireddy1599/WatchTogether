@@ -14,12 +14,100 @@ const AppState = {
         soundNotifications: true,
         chatNotifications: true
     },
-    videoData: {
-        currentTime: 0,
-        duration: 0,
-        isPlaying: false,
-        isSeeking: false
-    },
+    streamingServices: {
+        netflix: { name: 'Netflix', icon: 'https://cdn-icons-png.flaticon.com/512/5977/5977590.png' },
+        prime: { name: 'Prime Video', icon: 'https://cdn-icons-png.flaticon.com/512/5977/5977577.png' },
+        hotstar: { name: 'Hotstar', icon: 'https://cdn-icons-png.flaticon.com/512/5977/5977583.png' },
+        netmirror: { name: 'NetMirror', icon: 'https://cdn-icons-png.flaticon.com/512/5977/5977585.png' },
+        youtube: { name: 'YouTube', icon: 'https://cdn-icons-png.flaticon.com/512/1384/1384060.png' }
+    }
+};
+
+// Configuration helper - uses window.AppConfig.defaultModel if present
+function getDefaultModel() {
+    try {
+        if (window && window.AppConfig && window.AppConfig.defaultModel) {
+            return window.AppConfig.defaultModel;
+        }
+    } catch (e) {
+        // ignore
+    }
+    // Fallback safe default
+    return 'gpt-4o-mini';
+}
+// Sample Data
+const SampleData = {
+    users: [
+        {
+            id: "user1",
+            username: "MovieLover",
+            avatar: "https://ui-avatars.com/api/?name=Movie+Lover&background=6366f1&color=fff",
+            status: "online",
+            role: "host"
+        },
+        {
+            id: "user2",
+            username: "FilmFan",
+            avatar: "https://ui-avatars.com/api/?name=Film+Fan&background=ec4899&color=fff",
+            status: "online",
+            role: "participant"
+        },
+        {
+            id: "user3",
+            username: "CinemaGeek",
+            avatar: "https://ui-avatars.com/api/?name=Cinema+Geek&background=10b981&color=fff",
+            status: "online",
+            role: "participant"
+        }
+    ],
+    rooms: [
+        {
+            id: "room_001",
+            name: "Friday Movie Night",
+            description: "Weekly movie night with friends",
+            hostId: "user1",
+            isPublic: false,
+            password: "",
+            maxParticipants: 10,
+            currentParticipants: 3,
+            videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            videoTitle: "Big Buck Bunny",
+            videoType: "direct",
+            isPlaying: false,
+            currentTime: 0,
+            createdAt: "2025-08-24T19:00:00Z",
+            participants: ["user1", "user2", "user3"]
+        }
+    ],
+    messages: [
+        {
+            id: "msg1",
+            roomId: "room_001",
+            userId: "user1",
+            username: "MovieLover",
+            message: "Welcome everyone! Ready for an amazing movie night? 🎬",
+            timestamp: "2025-08-24T20:30:00Z",
+            type: "message"
+        },
+        {
+            id: "msg2",
+            roomId: "room_001",
+            userId: "user2",
+            username: "FilmFan",
+            message: "Absolutely! I've been looking forward to this all week 🍿",
+            timestamp: "2025-08-24T20:30:30Z",
+            type: "message"
+        },
+        {
+            id: "msg3",
+            roomId: "room_001",
+            userId: "user3",
+            username: "CinemaGeek",
+            message: "Same here! The trailer looked incredible 🎭",
+            timestamp: "2025-08-24T20:31:00Z",
+            type: "message"
+        }
+    ],
     sampleVideos: [
         {
             title: "Big Buck Bunny",
@@ -59,7 +147,7 @@ function generateAvatar(name) {
 }
 
 // Toast Notifications
-export function showToast(title, message, type = 'info') {
+function showToast(title, message, type = 'info') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -86,26 +174,17 @@ export function showToast(title, message, type = 'info') {
     }, 5000);
 }
 
-// Loading Overlay and Toast Functions - exported for use in other modules
-export function showLoading(text = 'Loading...') {
+// Loading Overlay
+function showLoading(text = 'Loading...') {
     const overlay = document.getElementById('loading-overlay');
     const loadingText = overlay.querySelector('.loading-text');
     loadingText.textContent = text;
     overlay.classList.remove('hidden');
 }
 
-export function hideLoading() {
+function hideLoading() {
     const overlay = document.getElementById('loading-overlay');
     overlay.classList.add('hidden');
-}
-
-export function generateRoomId() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < 6; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
 }
 
 // Screen Management
@@ -445,21 +524,6 @@ function initializeDashboard() {
     document.getElementById('create-room-btn').addEventListener('click', showCreateRoomModal);
     document.getElementById('join-room-btn').addEventListener('click', showJoinRoomModal);
     document.getElementById('browse-public-btn').addEventListener('click', browsePubblicRooms);
-
-    // Initialize streaming service buttons
-    const serviceButtons = document.querySelectorAll('.service-btn');
-    serviceButtons.forEach(button => {
-        button.replaceWith(button.cloneNode(true));
-    });
-    
-    document.querySelectorAll('.service-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const service = button.dataset.service;
-            if (service) {
-                createRoomForService(service);
-            }
-        });
-    });
 }
 
 function updateUserInfo() {
@@ -469,158 +533,37 @@ function updateUserInfo() {
     document.getElementById('user-status').className = `user-status ${user.status}`;
 }
 
-function createRoomForService(service) {
-    const serviceUrls = {
-        netflix: 'https://www.netflix.com',
-        prime: 'https://www.primevideo.com',
-        hotstar: 'https://www.hotstar.com',
-        netmirror: 'https://netmirror.org',
-        youtube: 'https://www.youtube.com'
-    };
-
-    const serviceNames = {
-        netflix: 'Netflix',
-        prime: 'Prime Video',
-        hotstar: 'Hotstar',
-        netmirror: 'NetMirror',
-        youtube: 'YouTube'
-    };
-
-    if (!serviceNames[service]) {
-        showToast('Error', 'Invalid streaming service', 'error');
-        return;
-    }
-
-    showLoading(`Creating ${serviceNames[service]} room...`);
-    
-    // Generate room ID
-    const roomId = generateRandomRoomId();
-    const currentUser = AppState.currentUser;
-
-    if (!currentUser) {
-        hideLoading();
-        showToast('Error', 'You must be logged in to create a room', 'error');
-        return;
-    }
-
-    // Create room in Firestore
-    const roomData = {
-        id: roomId,
-        name: `${serviceNames[service]} Watch Party`,
-        description: `Watch ${serviceNames[service]} together with friends`,
-        hostId: currentUser.id,
-        hostName: currentUser.username,
-        service: service,
-        serviceUrl: serviceUrls[service],
-        isPublic: false,
-        password: '',
-        maxParticipants: 10,
-        currentParticipants: 1,
-        participants: [currentUser.id],
-        videoUrl: '',
-        videoTitle: 'No video selected',
-        videoType: service,
-        isPlaying: false,
-        currentTime: 0,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        isActive: true
-    };
-
-    firebase.firestore().collection('rooms').doc(roomId)
-        .set(roomData)
-        .then(() => {
-            // Update AppState
-            AppState.currentRoom = roomData;
-            AppState.isHost = true;
-            showToast('Success', `${serviceNames[service]} room created!`, 'success');
-            initializeWatchRoom();
-            showScreen('watch');
-        })
-        .catch(error => {
-            console.error('Error creating room:', error);
-            showToast('Error', 'Failed to create room: ' + error.message, 'error');
-        })
-        .finally(() => {
-            hideLoading();
-        });
-}
-
-function generateRandomRoomId() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < 6; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-}
-
-async function loadRooms() {
-    try {
-        showLoading('Loading rooms...');
-        
-        const roomsSnapshot = await firebase.firestore()
-            .collection('rooms')
-            .where('isActive', '==', true)
-            .orderBy('createdAt', 'desc')
-            .limit(10)
-            .get();
-        
-        AppState.rooms = roomsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        displayActiveRooms();
-        displayRecentRooms();
-    } catch (error) {
-        console.error('Error loading rooms:', error);
-        showToast('Error', 'Failed to load rooms: ' + error.message, 'error');
-    } finally {
-        hideLoading();
-    }
+function loadRooms() {
+    AppState.rooms = [...SampleData.rooms];
+    displayActiveRooms();
+    displayRecentRooms();
 }
 
 function displayActiveRooms() {
     const container = document.getElementById('active-rooms');
-    if (!container) return;
-
-    const currentUser = AppState.currentUser;
-    if (!currentUser) return;
-
     const activeRooms = AppState.rooms.filter(room => 
-        (room.participants && room.participants.includes(currentUser.id)) || 
-        room.isPublic
+        room.participants.includes(AppState.currentUser.id) || room.isPublic
     );
     
     if (activeRooms.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
                 <p>No active rooms. Create one to get started!</p>
-                <div class="empty-state-actions">
-                    <button class="btn btn-primary" onclick="showCreateRoomModal()">Create Room</button>
-                    <button class="btn btn-secondary" onclick="showJoinRoomModal()">Join Room</button>
-                </div>
             </div>
         `;
         return;
     }
 
     container.innerHTML = activeRooms.map(room => `
-        <div class="room-card">
+        <div class="room-card" onclick="joinRoom('${room.id}')">
             <div class="room-card-header">
-                <h3 class="room-name">${room.name || 'Untitled Room'}</h3>
-                <span class="room-status ${room.isActive ? 'active' : 'inactive'}">${room.isActive ? 'Active' : 'Inactive'}</span>
+                <h3 class="room-name">${room.name}</h3>
+                <span class="room-status active">Active</span>
             </div>
-            <p class="room-description">${room.description || 'No description'}</p>
+            <p class="room-description">${room.description}</p>
             <div class="room-meta">
-                <span class="room-participants">👥 ${room.currentParticipants || 0}/${room.maxParticipants || 10}</span>
-                <span class="room-service">🎬 ${room.service || 'No service'}</span>
-            </div>
-            <div class="room-footer">
-                <button class="btn btn-primary" onclick="joinRoom('${room.id}')">Join Room</button>
-                ${room.hostId === currentUser.id ? `
-                    <button class="btn btn-secondary" onclick="showInvite('${room.id}')">Invite</button>
-                ` : ''}
+                <span>👥 ${room.currentParticipants}/${room.maxParticipants}</span>
+                <span>🎬 ${room.videoTitle}</span>
             </div>
         </div>
     `).join('');
@@ -628,37 +571,15 @@ function displayActiveRooms() {
 
 function displayRecentRooms() {
     const container = document.getElementById('recent-rooms');
-    if (!container) return;
-
-    const currentUser = AppState.currentUser;
-    if (!currentUser) return;
-
-    const recentRooms = AppState.rooms
-        .filter(room => room.isActive)
-        .sort((a, b) => (b.createdAt?.toDate?.() || 0) - (a.createdAt?.toDate?.() || 0))
-        .slice(0, 5);
-
-    if (recentRooms.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <p>No recent rooms available</p>
-            </div>
-        `;
-        return;
-    }
+    const recentRooms = AppState.rooms.slice(0, 5);
     
     container.innerHTML = recentRooms.map(room => `
-        <div class="room-item">
+        <div class="room-item" onclick="joinRoom('${room.id}')">
             <div class="room-item-info">
-                <h4>${room.name || 'Untitled Room'}</h4>
-                <p>Created by ${room.hostName || 'Unknown'}</p>
-                <p class="room-timestamp">${formatTimestamp(room.createdAt?.toDate?.() || new Date())}</p>
+                <h4>${room.name}</h4>
+                <p>${formatTimestamp(room.createdAt)}</p>
             </div>
-            <div class="room-item-meta">
-                <span class="room-service">${room.service || 'No service'}</span>
-                <span class="room-participants">👥 ${room.currentParticipants || 0}</span>
-                <button class="btn btn-sm btn-primary" onclick="joinRoom('${room.id}')">Join</button>
-            </div>
+            <span>👥 ${room.currentParticipants}</span>
         </div>
     `).join('');
 }
@@ -760,59 +681,34 @@ function createRoom() {
     }, 1500);
 }
 
-async function joinRoom(roomId) {
-    if (!AppState.currentUser) {
-        showToast('Error', 'You must be logged in to join a room', 'error');
+function joinRoom(roomId) {
+    const room = AppState.rooms.find(r => r.id === roomId);
+    if (!room) {
+        showToast('Error', 'Room not found', 'error');
         return;
     }
 
-    try {
-        showLoading('Joining room...');
-        
-        // Get latest room data from Firestore
-        const roomRef = firebase.firestore().collection('rooms').doc(roomId);
-        const roomDoc = await roomRef.get();
-
-        if (!roomDoc.exists) {
-            throw new Error('Room not found');
-        }
-
-        const roomData = { id: roomDoc.id, ...roomDoc.data() };
-        
-        // Check if room is still active
-        if (!roomData.isActive) {
-            throw new Error('This room is no longer active');
-        }
-
-        // Check room capacity
-        if (roomData.currentParticipants >= roomData.maxParticipants) {
-            throw new Error('Room is full');
-        }
-
-        // Check if user is already in the room
-        const isNewParticipant = !roomData.participants.includes(AppState.currentUser.id);
-        
-        if (isNewParticipant) {
-            // Update participants array and count in Firestore
-            await roomRef.update({
-                participants: firebase.firestore.FieldValue.arrayUnion(AppState.currentUser.id),
-                currentParticipants: firebase.firestore.FieldValue.increment(1)
-            });
-
-            // Update room data with new participant
-            roomData.participants.push(AppState.currentUser.id);
-            roomData.currentParticipants++;
-        }
-
-        // Update application state
-        AppState.currentRoom = roomData;
-        AppState.isHost = roomData.hostId === AppState.currentUser.id;
-    } catch (error) {
-        console.error('Error joining room:', error);
-        showToast('Error', error.message || 'Failed to join room', 'error');
-    } finally {
-        hideLoading();
+    if (room.currentParticipants >= room.maxParticipants) {
+        showToast('Error', 'Room is full', 'error');
+        return;
     }
+
+    AppState.currentRoom = room;
+    AppState.isHost = room.hostId === AppState.currentUser.id;
+
+    if (!room.participants.includes(AppState.currentUser.id)) {
+        room.participants.push(AppState.currentUser.id);
+        room.currentParticipants++;
+    }
+
+    showLoading('Joining room...');
+    
+    setTimeout(() => {
+        hideLoading();
+        showToast('Success', `Joined "${room.name}"`, 'success');
+        initializeWatchRoom();
+        showScreen('watch');
+    }, 1000);
 }
 
 function joinRoomWithCode() {
@@ -1488,7 +1384,4 @@ document.addEventListener('DOMContentLoaded', () => {
             assistantResponse.textContent = 'Error: ' + err.message;
         }
     });
-})();
-
-// Initialize the application
-document.addEventListener('DOMContentLoaded', initializeApp);
+});
