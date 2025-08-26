@@ -3,9 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "node server.js",
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "node build.js",
+    "build:vite": "vite build", 
+    "preview": "vite preview",
+    "test": "node node_modules/jest/bin/jest.js tests/",
+    "test:api": "jest tests/api.test.js",
+    "test:smoke": "node tests/smoke.signin.spec.js"
   },
   "dependencies": {
     "@types/react": "^18.2.55",
