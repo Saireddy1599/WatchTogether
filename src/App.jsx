@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Room from './Room';
 import VideoPlayer from './VideoPlayer';
 import StreamingServices from './components/StreamingServices';
-import './components/quick-actions.css';
+import '../components/quick-actions.css';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
