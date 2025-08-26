@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Room from './Room';
-import VideoPlayer from './VideoPlayer';
-import StreamingServices from './components/StreamingServices';
+import { StreamingServices } from './components/StreamingServices';
 import '../components/quick-actions.css';
 
 function App() {
@@ -42,9 +40,15 @@ function App() {
       ) : !currentRoom ? (
         <StreamingServices onRoomCreated={setCurrentRoom} />
       ) : (
-        <Room room={currentRoom}>
-          <VideoPlayer />
-        </Room>
+        <div className="room-container">
+          <div className="video-player">
+            <p>Room: {currentRoom}</p>
+            <video controls width="100%">
+              <source src="" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
       )}
     </div>
   );
